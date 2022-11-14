@@ -78,14 +78,21 @@ struct RBT {
                 }
                 else {
                     if (node->parent->right_child == node) {
+                        //dla rotateLeft
+                        //node = node->parent;
+                        //rotateLeft(node);
+
+                        //dla rotateLeft2
                         node = node->parent;
-                        rotateLeft(node);
+                        rotateLeft2(node->right_child, node);
                     }
-                    else if(node->parent->left_child == node) {
-                        node->parent->parent->color = RED;
-                        node->parent->color = BLACK;
-                        rotateRight(node->parent->parent);
-                    }
+
+                    node->parent->parent->color = RED;
+                    node->parent->color = BLACK;
+                    //rotateRight(node->parent->parent);
+
+                    rotateRight2(node->parent, node->parent->parent);
+
                 }
             }
             else if (node->parent->parent->right_child == node->parent) {
@@ -99,14 +106,21 @@ struct RBT {
                 }
                 else {
                     if (node->parent->left_child == node) {
+                        //dla rotateRight
+                        //node = node->parent;
+                        //rotateRight(node);
+
+                        //dla rotateRight2
                         node = node->parent;
-                        rotateRight(node);
+                        rotateRight2(node->left_child, node);
                     }
-                    else if (node->parent->right_child == node) {
-                        node->parent->parent->color = RED;
-                        node->parent->color = BLACK;
-                        rotateLeft(node->parent->parent);
-                    }
+
+                    node->parent->parent->color = RED;
+                    node->parent->color = BLACK;
+
+                    //rotateLeft(node->parent->parent); w zadaniu miał byc rotate z dwoma argumentami :(
+                    rotateLeft2(node->parent, node->parent->parent);
+
                 }
             }
         }
@@ -116,48 +130,91 @@ struct RBT {
         return 1;
     }
 
-    void rotateLeft(Node<T>* n) {
-        Node<T>* new_parent = n->right_child;
+    //void rotateLeft(Node<T>* n) {
+    //    Node<T>* new_parent = n->right_child;
 
-        n->right_child = new_parent->left_child;
+    //    n->right_child = new_parent->left_child;
 
-        if (new_parent->left_child != nullptr)
-            new_parent->left_child->parent = n;
+    //    if (new_parent->left_child != nullptr)
+    //        new_parent->left_child->parent = n;
 
-        new_parent->parent = n->parent;
+    //    new_parent->parent = n->parent;
 
-        // Ustawienie rodzica dla węzła z którym następuje zamiana
-        if (root == n)
-            root = new_parent;
-        else if (n->parent->left_child == n)
-            n->parent->left_child = new_parent;
-        else if (n->parent->right_child == n)
-            n->parent->right_child = new_parent;
+    //    // Ustawienie rodzica dla węzła z którym następuje zamiana
+    //    if (root == n)
+    //        root = new_parent;
+    //    else if (n->parent->left_child == n)
+    //        n->parent->left_child = new_parent;
+    //    else if (n->parent->right_child == n)
+    //        n->parent->right_child = new_parent;
 
-        n->parent = new_parent;
-        new_parent->left_child = n;
+    //    n->parent = new_parent;
+    //    new_parent->left_child = n;
+
+    //}
+
+    void rotateLeft2(Node<T>* child, Node<T>* par) {
+
+        par->right_child = child->left_child;
+
+        if (child->left_child != nullptr)
+            child->left_child->parent = par;
+
+        child->parent = par->parent;
+
+
+        if (root == par)
+            root = child;
+        else if (par->parent->left_child == par)
+            par->parent->left_child = child;
+        else if (par->parent->right_child == par)
+            par->parent->right_child = child;
+
+        par->parent = child;
+        child->left_child = par;
 
     }
 
-    void rotateRight(Node<T>* n) {
-        Node<T>* new_parent = n->left_child;
+    //void rotateRight(Node<T>* n) {
+    //    Node<T>* new_parent = n->left_child;
 
-        n->left_child = new_parent->right_child;
+    //    n->left_child = new_parent->right_child;
 
-        if (new_parent->right_child != nullptr)
-            new_parent->right_child->parent = n;
+    //    if (new_parent->right_child != nullptr)
+    //        new_parent->right_child->parent = n;
 
-        new_parent->parent = n->parent;
+    //    new_parent->parent = n->parent;
 
-        if (root == n)
-            root = new_parent;
-        else if (n->parent->left_child == n)
-            n->parent->left_child = new_parent;
-        else if (n->parent->right_child == n)
-            n->parent->right_child = new_parent;
+    //    if (root == n)
+    //        root = new_parent;
+    //    else if (n->parent->left_child == n)
+    //        n->parent->left_child = new_parent;
+    //    else if (n->parent->right_child == n)
+    //        n->parent->right_child = new_parent;
 
-        n->parent = new_parent;
-        new_parent->right_child = n;
+    //    n->parent = new_parent;
+    //    new_parent->right_child = n;
+
+    //}
+
+    void rotateRight2(Node<T>* child, Node<T>* par) {
+
+        par->left_child = child->right_child;
+
+        if (child->right_child != nullptr)
+            child->right_child->parent = par;
+
+        child->parent = par->parent;
+
+        if (root == par)
+            root = child;
+        else if (par->parent->left_child == par)
+            par->parent->left_child = child;
+        else if (par->parent->right_child == par)
+            par->parent->right_child = child;
+
+        par->parent = child;
+        child->right_child = par;
 
     }
 
@@ -246,7 +303,7 @@ struct RBT {
         root = nullptr;
     }
 
-    std::string str(std::string(*func)(T*)) {
+    std::string str(std::string(*func)(T*), int n = -1) {
         traversal_index = 0;
         Node<T>** arr = new Node<T>*[size];
         std::string s = "Size: " + std::to_string(size) + "\nHeight: " + std::to_string(height_h(root)) + "\n{\n";
@@ -257,7 +314,11 @@ struct RBT {
             return s;
         }
 
-        for (int i = 0; i < size; i++) {
+        if (n == -1 || n > size) {
+            n = size;
+        }
+
+        for (int i = 0; i < n; i++) {
             if (arr[i]->color == RED)
                 s += "\t[ \033[31m  RED  \033[0m";
             else {
@@ -337,9 +398,10 @@ using namespace std;
 
 int main()
 {
+    srand(time(NULL));
 
     RBT<simple_object>* rbt = new RBT<simple_object>();
-
+    // rbt1
     rbt->insert({ 2135, 'j' }, simpleObjectComparator);
     rbt->insert({ 1700, 'd' }, simpleObjectComparator);
     rbt->insert({ 1900, 'd' }, simpleObjectComparator);
@@ -361,8 +423,68 @@ int main()
     rbt->insert({ 81, 'd' }, simpleObjectComparator);
     rbt->insert({ 3011, 'd' }, simpleObjectComparator);
     rbt->insert({ 3012, 'd' }, simpleObjectComparator);
+
+    // rbt 2
+    //rbt->insert({ 2391, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 6, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 1919, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 5006, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 0, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 1, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 11, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 500, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 1000, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 9001, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 20, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 8, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 4, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 3, 'j' }, simpleObjectComparator);
+    //rbt->insert({ 2, 'j' }, simpleObjectComparator);
+
+
+
+
     cout << rbt->str(str);
 
     delete rbt;
+
+    const int MAX_ORDER = 7;
+    RBT<simple_object>* rbt2 = new RBT<simple_object>();
+
+    //for (int i = 1; i < MAX_ORDER + 1; i++) {
+    //    int n = pow(10, i);
+
+    //    clock_t start = clock();
+
+    //    for (int j = 0; j < n; j++) {
+    //        rbt2->insert({ rand() % RAND_MAX, 'x'}, simpleObjectComparator);
+    //    }
+
+    //    clock_t end = clock();
+
+    //    cout << "\nCzas: " << double(end - start) / CLOCKS_PER_SEC << "s\n" << rbt2->str(str, 10) ;
+
+    //    int m = pow(10, 4);
+    //    long match = 0;
+
+    //    start = clock();
+
+    //    for (int j = 0; j < m; j++) {
+    //        Node<simple_object> * result = rbt2->search({ rand() % RAND_MAX, 'x' }, simpleObjectComparator);
+
+    //        if (result != nullptr) {
+    //            match++;
+    //        }
+    //    }
+
+    //    end = clock();
+
+    //    cout << "\n\nWyszukiwanie -> czas: " << double(end - start) / CLOCKS_PER_SEC << "s, dopasowan: " << match << "\n\n";
+    //    match = 0;
+    //    rbt2->clear();
+    //}
+
+
+    delete rbt2;
 }
 
